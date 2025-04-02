@@ -5,8 +5,10 @@ Prerequesites. Please install the following before running:
 - Your choice of [sqlite CLI client](https://www.sqlite.org/download.html): I used `brew install sqlite`.
 
 Setup steps:
-1. Run `nvm use` in the root directory
-2. Run `npm install` to download all the needed packages
+1. Run `cp .env.example .env` to generate a `.env` file
+2. Add the correct `API_KEY` (App Id) and `API_SECRET` to the `.env` file
+3. Run `nvm use` in the root directory
+4. Run `npm install` to download all the needed packages
 
 # Running
 
