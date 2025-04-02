@@ -23,12 +23,18 @@ export const Registration = sequelize.define(
         registrationCompletion: DataTypes.STRING,
         registrationCompletionAmount: DataTypes.INTEGER,
         registrationSuccess: DataTypes.STRING,
-        score: DataTypes.JSON,
         totalSecondsTracked: DataTypes.INTEGER,
         firstAccessDate: DataTypes.DATE,
         lastAccessDate: DataTypes.DATE,
         completedDate: DataTypes.DATE,
         createdDate: DataTypes.DATE,
+        attempts: DataTypes.INTEGER,
+        activityCompletion: DataTypes.STRING,
+        activitySuccess: DataTypes.STRING,
+        score: DataTypes.DOUBLE,
+        completionAmount: DataTypes.DOUBLE,
+        timeTracked: DataTypes.STRING,
+        suspended: DataTypes.BOOLEAN,
         course: {
             type: DataTypes.UUID,
             references: {
@@ -51,13 +57,14 @@ export const Registration = sequelize.define(
 );
 
 
-Learner.belongsToMany(Registration, { through: Registration });
 Learner.hasMany(Registration);
+Registration.belongsTo(Learner, {
+    foreignKey: 'LearnerUuid'
+});
 
-Course.belongsToMany(Learner, { through: Registration });
 Course.hasMany(Registration);
-
-Registration.Learner = Registration.belongsTo(Learner);
-Registration.Course = Registration.belongsTo(Course);
+Registration.belongsTo(Course, {
+    foreignKey: 'CourseUuid'
+});
 
 Tag.belongsToMany(Registration, { through: 'RegistrationTags' })

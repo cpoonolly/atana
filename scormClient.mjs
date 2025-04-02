@@ -19,7 +19,7 @@ export class ScormCloudClient {
                 let nextFetch = undefined;
 
                 do {
-                    const data = await fetch({more: nextFetch});
+                    const data = await fetch(nextFetch);
 
                     for (const registration of data[dataKey]) {
                         yield registration;
@@ -31,9 +31,9 @@ export class ScormCloudClient {
         });
     }
 
-    async getRegistrations() {
-        const fetch = (params) => new Promise((resolve, reject) => {
-            this.registrationApi.getRegistrations(params, (error, data) => {
+    async getRegistrations(params) {
+        const fetch = (nextFetch) => new Promise((resolve, reject) => {
+            this.registrationApi.getRegistrations({...params, more: nextFetch }, (error, data) => {
                 if (error) {
                     reject(error?.response.body);
                 } else {
@@ -45,9 +45,9 @@ export class ScormCloudClient {
         return await this.paginatedFetch(fetch, 'registrations');
     }
 
-    async getCourses() {
-        const fetch = (params) => new Promise((resolve, reject) => {
-            this.coursesApi.getCourses(params, (error, data) => {
+    async getCourses(params) {
+        const fetch = (nextFetch) => new Promise((resolve, reject) => {
+            this.coursesApi.getCourses({...params, more: nextFetch}, (error, data) => {
                 if (error) {
                     reject(error?.response.body);
                 } else {
