@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
 
 import { sequelize } from './connection.mjs';
 import { Learner } from './learners.mjs';
@@ -8,10 +8,10 @@ import { Tag } from './tags.mjs';
 export const Registration = sequelize.define(
     'Registration',
     {
-        uuid: {
-            type: DataTypes.UUID,
+        id: {
+            type: DataTypes.INTEGER,
             primaryKey: true,
-            defaultValue: DataTypes.UUIDV4
+            autoIncrement: true,
         },
         registrationId: {
             type: DataTypes.STRING,
@@ -35,20 +35,6 @@ export const Registration = sequelize.define(
         completionAmount: DataTypes.DOUBLE,
         timeTracked: DataTypes.STRING,
         suspended: DataTypes.BOOLEAN,
-        course: {
-            type: DataTypes.UUID,
-            references: {
-                model: 'Courses',
-                key: 'uuid'
-            }
-        },
-        learner: {
-            type: DataTypes.UUID,
-            references: {
-                model: 'Learners',
-                key: 'uuid'
-            }
-        },
         raw: DataTypes.JSON
     },
     {
@@ -59,12 +45,12 @@ export const Registration = sequelize.define(
 
 Learner.hasMany(Registration);
 Registration.belongsTo(Learner, {
-    foreignKey: 'LearnerUuid'
+    foreignKey: 'LearnerId'
 });
 
 Course.hasMany(Registration);
 Registration.belongsTo(Course, {
-    foreignKey: 'CourseUuid'
+    foreignKey: 'CourseId'
 });
 
 Tag.belongsToMany(Registration, { through: 'RegistrationTags' })

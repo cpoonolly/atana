@@ -1,13 +1,13 @@
-import { DataTypes } from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
 import { sequelize } from './connection.mjs';
 
 export const Learner = sequelize.define(
     'Learner',
     {
-        uuid: {
-            type: DataTypes.UUID,
+        id: {
+            type: DataTypes.INTEGER,
             primaryKey: true,
-            defaultValue: DataTypes.UUIDV4
+            autoIncrement: true,
         },
         learnerId: {
             type: DataTypes.STRING,

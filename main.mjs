@@ -16,47 +16,41 @@ async function main() {
     const courses = await scormClient.getCourses();
 
     for (const course of courses) {
-        const [courseModel, courseCreated] = await Course.findOrCreate({
-            where: { courseId: course.id },
-            defaults: {
-                courseId: course.id,
-                title: course.title,
-                created: course.created,
-                updated: course.updated,
-                version: course.version,
-                activityId: course.activityId,
-                courseLearningStandard: course.courseLearningStandard,
-                raw: course
-            }
-        });
+        const [courseModel, courseCreated] = await Course.upsert({
+            courseId: course.id,
+            title: course.title,
+            created: course.created,
+            updated: course.updated,
+            version: course.version,
+            activityId: course.activityId,
+            courseLearningStandard: course.courseLearningStandard,
+            tags: (course.tags || []).map(tag => ({ name: tag })),
+            raw: course
+        }, {include: [Tag]});
 
-        for (const tagName of course.tags || []) {
-            const [tag, _] = await Tag.findOrCreate({
-                where: { name: tagName },
-            });
+        console.log(`--- Course ${courseCreated ? 'Created' : 'Updated'}: ${courseModel.courseId}`);
+    }
 
-            await courseModel.addTag(tag);
-        }
+    for (const registration of registrations) {
+        const [learnerModel, learnerCreated] = await Learner.upsert({
+            learnerId: registration.learner.id,
+            firstName: registration.learner.firstName,
+            lastName: registration.learner.lastName,
+            raw: registration.learner,
+        })
 
-        console.log(`--- Course ${courseCreated ? 'Created' : 'Loaded'}: ${courseModel.uuid}`);
+        console.log(`--- Learner ${learnerCreated ? 'Created' : 'Updated'}: ${learnerModel.learnerId}`);
     }
 
     for (const registration of registrations) {
         const courseId = registration.course.id;
-        const courseModel = await Course.findOne({where: { courseId }});
+        const courseModel = await Course.findOne({ where: { courseId } });
+        
+        const learnerId = registration.learner.id;
+        const learnerModel = await Learner.findOne({ where: { learnerId } });
 
-        const [learnerModel, learnerCreated] = await Learner.findOrCreate({
-            where: { learnerId: registration.learner.id },
-            defaults: {
-                learnerId: registration.learner.id,
-                firstName: registration.learner.firstName,
-                lastName: registration.learner.lastName,
-                raw: registration.learner,
-            }
-        });
-
-        console.log(`--- Course Loaded: ${courseModel.uuid}`);
-        console.log(`--- Learner ${learnerCreated ? 'Created' : 'Loaded'}: ${learnerModel.uuid}`);
+        console.log(`--- Course Loaded: ${courseModel.id}`);
+        console.log(`--- Learner Loaded: ${learnerModel.id}`);
 
         const [registrationModel, registrationCreated] = await Registration.upsert({
             registrationId: registration.id,
@@ -77,21 +71,14 @@ async function main() {
             activitySuccess: registration.activityDetails?.activitySuccess || null,
             timeTracked: registration.activityDetails?.timeTracked || null,
             suspended: registration.activityDetails?.suspended || null,
+            tags: (registration.tags || []).map(tag => ({ name: tag })),
             raw: registration,
-        });
+        }, {include: [Tag]});
 
         await registrationModel.setLearner(learnerModel);
         await registrationModel.setCourse(courseModel);
 
-        for (const tagName of registration.tags || []) {
-            const [tag, _] = await Tag.findOrCreate({
-                where: { name: tagName },
-            });
-
-            await registrationModel.addTag(tag);
-        }
-
-        console.log(`--- Registration ${registrationCreated ? 'Created' : 'Loaded'}: ${registrationModel.uuid}`);
+        console.log(`--- Registration ${registrationCreated ? 'Created' : 'Updated'}: ${registrationModel.id}`);
     }
 }
 

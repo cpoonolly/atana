@@ -5,10 +5,10 @@ import { sequelize } from './connection.mjs';
 export const Tag = sequelize.define(
     'Tag',
     {
-        uuid: {
-            type: DataTypes.UUID,
+        id: {
+            type: DataTypes.INTEGER,
             primaryKey: true,
-            defaultValue: DataTypes.UUIDV4
+            autoIncrement: true,
         },
         name: {
             type: DataTypes.STRING,

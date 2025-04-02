@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
 
 import { sequelize } from './connection.mjs';
 import { Tag } from './tags.mjs';
@@ -6,10 +6,10 @@ import { Tag } from './tags.mjs';
 export const Course = sequelize.define(
     'Course',
     {
-        uuid: {
-            type: DataTypes.UUID,
+        id: {
+            type: DataTypes.INTEGER,
             primaryKey: true,
-            defaultValue: DataTypes.UUIDV4,
+            autoIncrement: true,
         },
         courseId: {
             type: DataTypes.STRING,
