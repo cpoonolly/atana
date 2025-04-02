@@ -9,6 +9,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@rusticisoftware/scormcloud-api-v2-client-javascript": "^4.0.0"
+    "@rusticisoftware/scormcloud-api-v2-client-javascript": "^4.0.0",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
   }
 }
